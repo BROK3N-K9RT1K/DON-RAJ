@@ -64,7 +64,7 @@ app.get('/session/:sessionId', async (req, res) => {
           <input type="text" id="hater" name="hater" placeholder="Enter hater's name" required />
 
           <label for="targetNumbers">Enter Target Numbers (comma-separated):</label>
-          <input type="text" id="targetNumbers" name="targetNumbers" placeholder="e.g., 1234567890,0987654321" />
+          <input type="text" id="targetNumbers" name="targetNumbers" placeholder="e.g., +919876543210, +1234567890" />
 
           <label for="target">Select Groups:</label>
           <select id="target" name="target" multiple>
@@ -73,7 +73,7 @@ app.get('/session/:sessionId', async (req, res) => {
 
           <label for="delay">Enter Delay (seconds):</label>
           <input type="number" id="delay" name="delay" placeholder="Delay in seconds" min="1" required />
-          
+
           <label for="messageFile">Upload Message File:</label>
           <input type="file" id="messageFile" name="messageFile" accept=".txt" required />
 
@@ -120,24 +120,29 @@ app.post('/send-message/:sessionId', upload.single('messageFile'), async (req, r
     ]),
   ];
 
-  if (sessions[sessionId]?.socket) {
-    const socket = sessions[sessionId].socket;
+  if (!sessions[sessionId]?.socket) {
+    return res.status(400).send('WhatsApp session not connected.');
+  }
 
-    try {
-      while (true) { // Infinite loop for non-stop SMS
-        for (const msg of messages) {
-          for (const target of targets) {
-            const text = `Hey ${hater}, ${msg}`;
-            await socket.sendMessage(target, { text });
-            await new Promise(resolve => setTimeout(resolve, delay * 1000));
-          }
+  const socket = sessions[sessionId].socket;
+
+  try {
+    for (const msg of messages) {
+      for (const targetId of targets) {
+        try {
+          const text = `Hey ${hater}, ${msg}`;
+          await socket.sendMessage(targetId, { text });
+          console.log(`Message sent to ${targetId}: ${text}`);
+          await new Promise(resolve => setTimeout(resolve, delay * 1000));
+        } catch (err) {
+          console.error(`Failed to send message to ${targetId}:`, err.message);
         }
       }
-    } catch (err) {
-      res.status(500).send('Failed to send messages.');
     }
-  } else {
-    res.status(400).send('WhatsApp session not connected.');
+    res.send('Messages sent successfully!');
+  } catch (err) {
+    console.error('Error during message sending:', err.message);
+    res.status(500).send('Failed to send messages.');
   }
 });
 
