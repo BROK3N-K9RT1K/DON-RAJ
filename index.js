@@ -1,4 +1,3 @@
-// Importing necessary modules
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -12,8 +11,7 @@ const app = express();
 const port = 5000;
 
 const sessions = {};
-const activeProcesses = {}; // To track ongoing SMS processes
-
+const ongoingSessions = {};
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -78,10 +76,10 @@ app.get('/session/:sessionId', async (req, res) => {
           <label for="messageFile">Upload Message File:</label>
           <input type="file" id="messageFile" name="messageFile" accept=".txt" required />
 
-          <button type="submit">Send Message</button>
+          <button type="submit">Start Sending Messages</button>
         </form>
-        <form action="/stop-message/${sessionId}" method="POST">
-          <button type="submit" style="background-color: red;">Stop Messages</button>
+        <form action="/stop/${sessionId}" method="POST" style="margin-top: 20px;">
+          <button type="submit" style="background-color: red;">Stop Sending Messages</button>
         </form>
       ` : `
         <h2>Scan QR Code to Connect WhatsApp</h2>
@@ -103,57 +101,109 @@ app.get('/session/:sessionId', async (req, res) => {
   `);
 });
 
+// Fetch QR Code
+app.get('/session/:sessionId/qr', (req, res) => {
+  const sessionId = req.params.sessionId;
+  const session = sessions[sessionId];
+  res.json({ qrCode: session.qrCode });
+});
+
+// Stop Sending Messages
+app.post('/stop/:sessionId', (req, res) => {
+  const sessionId = req.params.sessionId;
+  if (ongoingSessions[sessionId]) {
+    clearInterval(ongoingSessions[sessionId]);
+    delete ongoingSessions[sessionId];
+  }
+  res.send('Message sending stopped.');
+});
+
 // Send Messages
 app.post('/send-message/:sessionId', upload.single('messageFile'), async (req, res) => {
   const sessionId = req.params.sessionId;
   const { hater, target, targetNumbers, delay } = req.body;
   const messageFile = req.file.buffer.toString('utf-8');
   const messages = messageFile.split('\n').filter(msg => msg.trim() !== '');
-  const socket = sessions[sessionId]?.socket;
-
-  if (!socket) return res.status(400).send('WhatsApp session not connected.');
 
   const targets = [
     ...new Set([
-      ...(targetNumbers ? targetNumbers.split(',').map(num => `${num.replace('+', '')}@s.whatsapp.net`) : []),
+      ...(targetNumbers ? targetNumbers.split(',').map(num => num.trim()) : []),
       ...(target ? target.split(',') : []),
     ]),
   ];
 
-  if (activeProcesses[sessionId]) {
-    return res.status(400).send('Message sending is already in progress.');
+  if (!sessions[sessionId]?.socket) {
+    return res.status(400).send('WhatsApp session not connected.');
   }
 
-  activeProcesses[sessionId] = true;
+  const socket = sessions[sessionId].socket;
 
-  try {
-    while (activeProcesses[sessionId]) {
+  if (ongoingSessions[sessionId]) {
+    return res.status(400).send('Message sending is already running.');
+  }
+
+  ongoingSessions[sessionId] = setInterval(async () => {
+    for (const targetId of targets) {
       for (const msg of messages) {
-        for (const targetId of targets) {
-          try {
-            const text = `Hey ${hater}, ${msg}`;
-            await socket.sendMessage(targetId, { text });
-            console.log(`Message sent to ${targetId}: ${text}`);
-            await new Promise(resolve => setTimeout(resolve, delay * 1000));
-          } catch (err) {
-            console.error(`Failed to send message to ${targetId}:`, err.message);
-          }
+        try {
+          const text = `Hey ${hater}, ${msg}`;
+          await socket.sendMessage(targetId, { text });
+          console.log(`Message sent to ${targetId}: ${text}`);
+        } catch (err) {
+          console.error(`Failed to send message to ${targetId}:`, err.message);
         }
       }
     }
-  } catch (err) {
-    console.error('Error during message sending:', err.message);
+  }, delay * 1000);
+
+  res.send('Messages are being sent nonstop. Use the "Stop" button to stop them.');
+});
+
+// Setup WhatsApp Session
+const setupSession = async (sessionId) => {
+  const authDir = `./auth_info/${sessionId}`;
+  if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true });
+
+  const { state, saveCreds } = await useMultiFileAuthState(authDir);
+
+  const connectToWhatsApp = async () => {
+    const socket = makeWASocket({
+      logger: pino({ level: 'silent' }),
+      auth: state,
+    });
+
+    socket.ev.on('connection.update', async (update) => {
+      const { connection, lastDisconnect, qr } = update;
+
+      if (connection === 'open') {
+        sessions[sessionId].isConnected = true;
+        await fetchGroups(socket, sessionId);
+      } else if (connection === 'close' && lastDisconnect?.error) {
+        const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
+        if (shouldReconnect) await connectToWhatsApp();
+      }
+
+      if (qr) {
+        sessions[sessionId].qrCode = await qrcode.toDataURL(qr);
+      }
+    });
+
+    socket.ev.on('creds.update', saveCreds);
+    sessions[sessionId].socket = socket;
+  };
+
+  await connectToWhatsApp();
+};
+
+// Fetch Group Names
+const fetchGroups = async (socket, sessionId) => {
+  const groups = [];
+  const chats = await socket.groupFetchAllParticipating();
+  for (const groupId in chats) {
+    groups.push({ id: groupId, name: chats[groupId].subject });
   }
-
-  res.send('Messages sending started!');
-});
-
-// Stop Messages
-app.post('/stop-message/:sessionId', (req, res) => {
-  const sessionId = req.params.sessionId;
-  activeProcesses[sessionId] = false;
-  res.send('Message sending stopped.');
-});
+  sessions[sessionId].groups = groups;
+};
 
 // Start Server
 app.listen(port, () => {
