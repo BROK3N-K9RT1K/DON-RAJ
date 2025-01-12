@@ -29,12 +29,15 @@ app.get('/', (req, res) => {
 app.get('/session/:sessionId', async (req, res) => {
   const sessionId = req.params.sessionId;
 
+  // Initialize session if not exists
   if (!sessions[sessionId]) {
     sessions[sessionId] = { isConnected: false, qrCode: null, groups: [] };
     setupSession(sessionId);
   }
 
   const session = sessions[sessionId];
+
+  // Serve session page
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -172,6 +175,16 @@ const setupSession = async (sessionId) => {
   };
 
   await connectToWhatsApp();
+};
+
+// Fetch Group Names
+const fetchGroups = async (socket, sessionId) => {
+  const groups = [];
+  const chats = await socket.groupFetchAllParticipating();
+  for (const groupId in chats) {
+    groups.push({ id: groupId, name: chats[groupId].subject });
+  }
+  sessions[sessionId].groups = groups;
 };
 
 // Start Server
