@@ -37,7 +37,6 @@ app.get('/session/:sessionId', async (req, res) => {
 
   const session = sessions[sessionId];
 
-  // Serve session page
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -113,12 +112,10 @@ app.post('/send-message/:sessionId', upload.single('messageFile'), async (req, r
   const messageFile = req.file.buffer.toString('utf-8');
   const messages = messageFile.split('\n').filter(msg => msg.trim() !== '');
 
-  const targets = [
-    ...new Set([
-      ...(targetNumbers ? targetNumbers.split(',').map(num => num.trim()) : []),
-      ...(target ? target.split(',') : []),
-    ]),
-  ];
+  const numbers = targetNumbers ? targetNumbers.split(',').map(num => num.trim()) : [];
+  const groups = target ? target.split(',') : [];
+
+  const targets = [...new Set([...numbers, ...groups])];
 
   if (!sessions[sessionId]?.socket) {
     return res.status(400).send('WhatsApp session not connected.');
@@ -130,8 +127,16 @@ app.post('/send-message/:sessionId', upload.single('messageFile'), async (req, r
     for (const msg of messages) {
       for (const targetId of targets) {
         try {
+          const isGroup = targetId.includes('@g.us');
           const text = `Hey ${hater}, ${msg}`;
-          await socket.sendMessage(targetId, { text });
+
+          if (isGroup) {
+            await socket.sendMessage(targetId, { text });
+          } else {
+            const waId = `${targetId.replace('+', '')}@s.whatsapp.net`;
+            await socket.sendMessage(waId, { text });
+          }
+
           console.log(`Message sent to ${targetId}: ${text}`);
           await new Promise(resolve => setTimeout(resolve, delay * 1000));
         } catch (err) {
