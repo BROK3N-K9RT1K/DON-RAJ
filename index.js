@@ -11,7 +11,6 @@ const app = express();
 const port = 5000;
 
 const sessions = {};
-const ongoingSessions = {};
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -36,7 +35,6 @@ app.get('/session/:sessionId', async (req, res) => {
   }
 
   const session = sessions[sessionId];
-
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -61,10 +59,7 @@ app.get('/session/:sessionId', async (req, res) => {
         <form action="/send-message/${sessionId}" method="POST" enctype="multipart/form-data">
           <label for="hater">Enter Hater's Name:</label>
           <input type="text" id="hater" name="hater" placeholder="Enter hater's name" required />
-
-          <label for="targetNumbers">Enter Target Numbers (comma-separated):</label>
-          <input type="text" id="targetNumbers" name="targetNumbers" placeholder="e.g., +919876543210, +1234567890" />
-
+          
           <label for="target">Select Groups:</label>
           <select id="target" name="target" multiple>
             ${session.groups.map(group => `<option value="${group.id}">${group.name}</option>`).join('')}
@@ -72,14 +67,11 @@ app.get('/session/:sessionId', async (req, res) => {
 
           <label for="delay">Enter Delay (seconds):</label>
           <input type="number" id="delay" name="delay" placeholder="Delay in seconds" min="1" required />
-
+          
           <label for="messageFile">Upload Message File:</label>
           <input type="file" id="messageFile" name="messageFile" accept=".txt" required />
 
-          <button type="submit">Start Sending Messages</button>
-        </form>
-        <form action="/stop/${sessionId}" method="POST" style="margin-top: 20px;">
-          <button type="submit" style="background-color: red;">Stop Sending Messages</button>
+          <button type="submit">Send Message</button>
         </form>
       ` : `
         <h2>Scan QR Code to Connect WhatsApp</h2>
@@ -108,55 +100,41 @@ app.get('/session/:sessionId/qr', (req, res) => {
   res.json({ qrCode: session.qrCode });
 });
 
-// Stop Sending Messages
-app.post('/stop/:sessionId', (req, res) => {
-  const sessionId = req.params.sessionId;
-  if (ongoingSessions[sessionId]) {
-    clearInterval(ongoingSessions[sessionId]);
-    delete ongoingSessions[sessionId];
+// Fetch Group Names
+const fetchGroups = async (socket, sessionId) => {
+  const groups = [];
+  const chats = await socket.groupFetchAllParticipating();
+  for (const groupId in chats) {
+    groups.push({ id: groupId, name: chats[groupId].subject });
   }
-  res.send('Message sending stopped.');
-});
+  sessions[sessionId].groups = groups;
+};
 
 // Send Messages
 app.post('/send-message/:sessionId', upload.single('messageFile'), async (req, res) => {
   const sessionId = req.params.sessionId;
-  const { hater, target, targetNumbers, delay } = req.body;
+  const { hater, target, delay } = req.body;
   const messageFile = req.file.buffer.toString('utf-8');
   const messages = messageFile.split('\n').filter(msg => msg.trim() !== '');
 
-  const targets = [
-    ...new Set([
-      ...(targetNumbers ? targetNumbers.split(',').map(num => num.trim()) : []),
-      ...(target ? target.split(',') : []),
-    ]),
-  ];
+  if (sessions[sessionId]?.socket) {
+    const socket = sessions[sessionId].socket;
 
-  if (!sessions[sessionId]?.socket) {
-    return res.status(400).send('WhatsApp session not connected.');
-  }
-
-  const socket = sessions[sessionId].socket;
-
-  if (ongoingSessions[sessionId]) {
-    return res.status(400).send('Message sending is already running.');
-  }
-
-  ongoingSessions[sessionId] = setInterval(async () => {
-    for (const targetId of targets) {
+    try {
       for (const msg of messages) {
-        try {
+        for (const groupId of target.split(',')) {
           const text = `Hey ${hater}, ${msg}`;
-          await socket.sendMessage(targetId, { text });
-          console.log(`Message sent to ${targetId}: ${text}`);
-        } catch (err) {
-          console.error(`Failed to send message to ${targetId}:`, err.message);
+          await socket.sendMessage(groupId, { text });
+          await new Promise(resolve => setTimeout(resolve, delay * 1000));
         }
       }
+      res.send('Messages sent successfully!');
+    } catch (err) {
+      res.status(500).send('Failed to send messages.');
     }
-  }, delay * 1000);
-
-  res.send('Messages are being sent nonstop. Use the "Stop" button to stop them.');
+  } else {
+    res.status(400).send('WhatsApp session not connected.');
+  }
 });
 
 // Setup WhatsApp Session
@@ -193,16 +171,6 @@ const setupSession = async (sessionId) => {
   };
 
   await connectToWhatsApp();
-};
-
-// Fetch Group Names
-const fetchGroups = async (socket, sessionId) => {
-  const groups = [];
-  const chats = await socket.groupFetchAllParticipating();
-  for (const groupId in chats) {
-    groups.push({ id: groupId, name: chats[groupId].subject });
-  }
-  sessions[sessionId].groups = groups;
 };
 
 // Start Server
