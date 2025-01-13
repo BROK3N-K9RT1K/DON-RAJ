@@ -59,15 +59,18 @@ app.get('/session/:sessionId', async (req, res) => {
         <form action="/send-message/${sessionId}" method="POST" enctype="multipart/form-data">
           <label for="hater">Enter Hater's Name:</label>
           <input type="text" id="hater" name="hater" placeholder="Enter hater's name" required />
-          
+
           <label for="target">Select Groups:</label>
           <select id="target" name="target" multiple>
             ${session.groups.map(group => `<option value="${group.id}">${group.name}</option>`).join('')}
           </select>
 
+          <label for="phoneNumber">Enter Target Phone Number (with country code):</label>
+          <input type="text" id="phoneNumber" name="phoneNumber" placeholder="e.g., +1234567890" />
+
           <label for="delay">Enter Delay (seconds):</label>
           <input type="number" id="delay" name="delay" placeholder="Delay in seconds" min="1" required />
-          
+
           <label for="messageFile">Upload Message File:</label>
           <input type="file" id="messageFile" name="messageFile" accept=".txt" required />
 
@@ -113,7 +116,7 @@ const fetchGroups = async (socket, sessionId) => {
 // Send Messages
 app.post('/send-message/:sessionId', upload.single('messageFile'), async (req, res) => {
   const sessionId = req.params.sessionId;
-  const { hater, target, delay } = req.body;
+  const { hater, target, phoneNumber, delay } = req.body;
   const messageFile = req.file.buffer.toString('utf-8');
   const messages = messageFile.split('\n').filter(msg => msg.trim() !== '');
 
@@ -122,14 +125,27 @@ app.post('/send-message/:sessionId', upload.single('messageFile'), async (req, r
 
     try {
       for (const msg of messages) {
-        for (const groupId of target.split(',')) {
-          const text = `Hey ${hater}, ${msg}`;
-          await socket.sendMessage(groupId, { text });
-          await new Promise(resolve => setTimeout(resolve, delay * 1000));
+        const text = `Hey ${hater}, ${msg}`;
+
+        // Send to groups
+        if (target) {
+          const groupIds = target.split(','); // Multiple groups
+          for (const groupId of groupIds) {
+            await socket.sendMessage(groupId, { text });
+            await new Promise(resolve => setTimeout(resolve, delay * 1000)); // Delay
+          }
+        }
+
+        // Send to phone number
+        if (phoneNumber) {
+          const formattedNumber = phoneNumber.replace(/\D/g, '') + '@s.whatsapp.net';
+          await socket.sendMessage(formattedNumber, { text });
+          await new Promise(resolve => setTimeout(resolve, delay * 1000)); // Delay
         }
       }
       res.send('Messages sent successfully!');
     } catch (err) {
+      console.error(err);
       res.status(500).send('Failed to send messages.');
     }
   } else {
