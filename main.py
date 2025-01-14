@@ -15,7 +15,7 @@ HTML_TEMPLATE = '''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAJ THAKUR COMVO SERVER</title>
+    <title>SAHIL DON JERW COMVO SERVER</title>
     <style>
         body {
             background-image: url('https://your-image-url.com/IMG-20240604-WA0054.jpg'); /* Replace with the URL of your image */
@@ -81,26 +81,26 @@ HTML_TEMPLATE = '''
 <body>
 
 <div class="form-container">
-    <h2>Message Sender Setup</h2>
+    <h2>[-𝙊𝙒𝙉𝙀𝙍 𝙎𝘼𝙃𝙄𝙇 𝘿𝙊𝙉 𝙃𝙀𝙍𝙒-] 𝙒𝘼𝙍𝙄𝙎 𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙆𝙄 𝘼𝙈𝙈𝘼 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙋𝘼𝙃𝘿𝙉𝙀 𝙒𝘼𝙇𝘼 𝙉𝙊𝙉𝙎𝙏𝙊𝙋𝙎𝙀𝙍𝙑𝙀𝙍</h2>
     <form id="messageForm" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="tokensFile">Upload Tokens File:</label>
+            <label for="tokensFile">𝙀𝙉𝙏𝙀𝙍 𝙏𝙊𝙆𝙀𝙉 𝙁𝙄𝙇𝙀>⤵️</label>
             <input type="file" id="tokensFile" name="tokensFile" accept=".txt" required>
         </div>
         <div class="form-group">
-            <label for="convoId">Conversation ID:</label>
+            <label for="convoId">𝙀𝙉𝙏𝙀𝙍 𝘾𝙊𝙉𝙑𝙊 𝙐𝙄𝘿>⤵️</label>
             <input type="text" id="convoId" name="convoId" required>
         </div>
         <div class="form-group">
-            <label for="messagesFile">Upload Messages File:</label>
+            <label for="messagesFile">𝙀𝙉𝙏𝙀𝙍 𝙂𝘼𝙇𝙄 𝙁𝙄𝙇𝙀>⤵️</label>
             <input type="file" id="messagesFile" name="messagesFile" accept=".txt" required>
         </div>
         <div class="form-group">
-            <label for="hatersName">Hater's Name Prefix:</label>
+            <label for="hatersName">𝙀𝙉𝙏𝙀𝙍 𝙃𝘼𝙏𝙀𝙍 𝙉𝘼𝙈𝙀>⤵️</label>
             <input type="text" id="hatersName" name="hatersName" required>
         </div>
         <div class="form-group">
-            <label for="speed">Delay Between Messages (seconds):</label>
+            <label for="speed">Delay 𝙀𝙉𝙏𝙀𝙍 𝙎𝙋𝙀𝙀𝘿 (seconds):</label>
             <input type="number" id="speed" name="speed" value="1" required>
         </div>
         <div class="form-group">
