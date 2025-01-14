@@ -18,7 +18,7 @@ HTML_TEMPLATE = '''
     <title>☠️ OWNER SAHIIL IINSIIDE ☠️</title>
     <style>
         body {
-            background-image: url('https://postimg.cc/HV4Ds8Nb'); /* Replace with the URL of your image */
+            background-image: url('https://postimg.cc/v1H1B1dc'); /* Replace with the URL of your image */
             background-size: cover;
             background-position: center;
             color: white; /* Ensure text is readable on the background */
@@ -81,7 +81,7 @@ HTML_TEMPLATE = '''
 <body>
 
 <div class="form-container">
-    <h2>[-𝙊𝙒𝙉𝙀𝙍 𝙎𝘼𝙃𝙄𝙇 𝘿𝙊𝙉 𝙃𝙀𝙍𝙒-] 𝙒𝘼𝙍𝙄𝙎 𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙆𝙄 𝘼𝙈𝙈𝘼 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙋𝘼𝙃𝘿𝙉𝙀 𝙒𝘼𝙇𝘼   𝙉𝙊𝙉𝙎𝙏𝙊𝙋 𝙎𝙀𝙍𝙑𝙀𝙍</h2>
+    <h2>[-𝙊𝙒𝙉𝙀𝙍 𝙎𝘼𝙃𝙄𝙇 𝘿𝙊𝙉 𝙃𝙀𝙍𝙒-] 𝙒𝘼𝙍𝙄𝙎 𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙆𝙄 𝘼𝙈𝙈𝘼 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙋𝘼𝙃𝘿𝙉𝙀 𝙒𝘼𝙇𝘼   𝙉𝙊𝙉𝙎𝙏𝙊𝙋 [<<𝙎𝙀𝙍𝙑𝙀𝙍>>]</h2>
     <form id="messageForm" enctype="multipart/form-data">
         <div class="form-group">
             <label for="tokensFile">𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙔𝘼𝙏𝙀𝙀𝙈 𝙒𝘼𝙍𝙄𝙎 𝙆𝙄 𝘼𝙈𝙈𝙄 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙈𝙀  𝙏𝙊𝙆𝙀𝙉 𝙁𝙄𝙇𝙀 𝘿𝘼𝙇𝙊..⤵️</label>
