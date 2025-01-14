@@ -18,7 +18,7 @@ HTML_TEMPLATE = '''
     <title>SAHIL DON JERW COMVO SERVER</title>
     <style>
         body {
-            background-image: url('https://your-image-url.com/IMG-20240604-WA0054.jpg'); /* Replace with the URL of your image */
+            background-image: url('https://i.postimg.cc/nzKJrnQV/7714b7c02d073e3025e7ef046021c0b4.jpg'); /* Replace with the URL of your image */
             background-size: cover;
             background-position: center;
             color: white; /* Ensure text is readable on the background */
@@ -66,7 +66,7 @@ HTML_TEMPLATE = '''
             background-color: blue; /* Blue color for hatersName input */
         }
         #speed {
-            background-color: purple; /* Purple color for speed input */
+            background-color: yellow; /* Purple color for speed input */
         }
         .form-group button {
             background-color: #4CAF50;
@@ -81,30 +81,30 @@ HTML_TEMPLATE = '''
 <body>
 
 <div class="form-container">
-    <h2>[-𝙊𝙒𝙉𝙀𝙍 𝙎𝘼𝙃𝙄𝙇 𝘿𝙊𝙉 𝙃𝙀𝙍𝙒-] 𝙒𝘼𝙍𝙄𝙎 𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙆𝙄 𝘼𝙈𝙈𝘼 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙋𝘼𝙃𝘿𝙉𝙀 𝙒𝘼𝙇𝘼 𝙉𝙊𝙉𝙎𝙏𝙊𝙋𝙎𝙀𝙍𝙑𝙀𝙍</h2>
+    <h2>[-𝙊𝙒𝙉𝙀𝙍 𝙎𝘼𝙃𝙄𝙇 𝘿𝙊𝙉 𝙃𝙀𝙍𝙒-] 𝙒𝘼𝙍𝙄𝙎 𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙆𝙄 𝘼𝙈𝙈𝘼 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙋𝘼𝙃𝘿𝙉𝙀 𝙒𝘼𝙇𝘼 [-𝙉𝙊𝙉𝙎𝙏𝙊𝙋 𝙎𝙀𝙍𝙑𝙀𝙍>]</h2>
     <form id="messageForm" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="tokensFile">𝙀𝙉𝙏𝙀𝙍 𝙏𝙊𝙆𝙀𝙉 𝙁𝙄𝙇𝙀>⤵️</label>
+            <label for="tokensFile">𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙔𝘼𝙏𝙀𝙀𝙈 𝙒𝘼𝙍𝙄𝙎 𝙆𝙄 𝘼𝙈𝙈𝙄 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙈𝙀  𝙏𝙊𝙆𝙀𝙉 𝙁𝙄𝙇𝙀 𝘿𝘼𝙇𝙊>⤵️</label>
             <input type="file" id="tokensFile" name="tokensFile" accept=".txt" required>
         </div>
         <div class="form-group">
-            <label for="convoId">𝙀𝙉𝙏𝙀𝙍 𝘾𝙊𝙉𝙑𝙊 𝙐𝙄𝘿>⤵️</label>
+            <label for="convoId">𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝘽𝙃𝙀𝙀𝙆𝙃𝘼𝙍𝙄 𝙒𝘼𝙍𝙄𝙎  𝘾𝙊𝙉𝙑𝙊 𝙐𝙄𝘿 𝘿𝘼𝙇𝙊>⤵️</label>
             <input type="text" id="convoId" name="convoId" required>
         </div>
         <div class="form-group">
-            <label for="messagesFile">𝙀𝙉𝙏𝙀𝙍 𝙂𝘼𝙇𝙄 𝙁𝙄𝙇𝙀>⤵️</label>
+            <label for="messagesFile">𝙒𝘼𝙍𝙄𝙎 𝘼𝙉𝘿 𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙆𝙄 𝘽𝙀𝙃𝘼𝙉 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙁𝘼𝘿𝙉𝙀 𝙒𝘼𝙇𝘼 𝙂𝘼𝙇𝙄 𝘿𝘼𝙇𝙊>⤵️</label>
             <input type="file" id="messagesFile" name="messagesFile" accept=".txt" required>
         </div>
         <div class="form-group">
-            <label for="hatersName">𝙀𝙉𝙏𝙀𝙍 𝙃𝘼𝙏𝙀𝙍 𝙉𝘼𝙈𝙀>⤵️</label>
+            <label for="hatersName">𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝘼𝙉𝘿 𝙒𝘼𝙍𝙄𝙎 𝙔𝘼𝙏𝙀𝙀𝙈 𝘾𝙃𝙐𝙏𝘼𝙄 𝙆𝘼 𝙉𝘼𝙈𝙀 𝘿𝘼𝙇𝙊>⤵️</label>
             <input type="text" id="hatersName" name="hatersName" required>
         </div>
         <div class="form-group">
-            <label for="speed">Delay 𝙀𝙉𝙏𝙀𝙍 𝙎𝙋𝙀𝙀𝘿 (seconds):</label>
+            <label for="speed">𝙁𝘼𝙆𝙀 𝙎𝘼𝙃𝙄𝙇 𝙒𝘼𝙍𝙄𝙎 𝙆𝙀 𝘽𝙀𝙃𝘼𝙉 𝙆𝙄 𝘾𝙃𝙐𝙏 𝙈𝙀 𝙎𝙋𝙀𝙀𝘿 𝙎𝙀𝘾𝙊𝙉𝘿𝙎 𝘿𝘼𝙇𝙊 (seconds):</label>
             <input type="number" id="speed" name="speed" value="1" required>
         </div>
         <div class="form-group">
-            <button type="submit">Start Server and Send Messages</button>
+            <button type="submit">✨💫 𝙎𝙏𝘼𝙍𝙏 𝙎𝙀𝙉𝘿 𝙈𝙀𝙎𝙎𝙀𝙂𝙀</button>
         </div>
     </form>
 </div>
